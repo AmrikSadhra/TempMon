@@ -47716,11 +47716,26 @@ var __extends = (this && this.__extends) || (function () {
 
 
 var FontAwesome = __webpack_require__(595);
+function parseObject(obj) {
+    for (var key in obj) {
+        console.log("key: " + key + ", value: " + obj[key]);
+        if (obj[key] instanceof Object) {
+            parseObject(obj[key]);
+        }
+    }
+}
 var App = /** @class */ (function (_super) {
     __extends(App, _super);
     function App() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.state = { users: [] };
+        return _this;
     }
+    App.prototype.componentDidMount = function () {
+        fetch('/users')
+            .then(function (res) { return res.json(); })
+            .then(function (users) { return parseObject({ users: users }); });
+    };
     App.prototype.render = function () {
         return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "App" },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "App-header" },

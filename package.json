@@ -6,7 +6,6 @@
     "@types/react-bootstrap": "^0.31.6",
     "@types/react-chartjs-2": "^2.0.2",
     "@types/react-fontawesome": "^1.6.1",
-    "@types/serialport": "^6.0.0",
     "chart.js": "^2.7.1",
     "react": "^16.0.0",
     "react-bootstrap": "^0.31.5",
@@ -14,7 +13,6 @@
     "react-dom": "^16.0.0",
     "react-fontawesome": "^1.6.1",
     "react-scripts-ts": "2.8.0",
-    "serialport": "^6.0.4",
     "webpack-dev-server": "^2.9.4"
   },
   "scripts": {

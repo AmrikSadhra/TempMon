@@ -26,6 +26,7 @@
     "jest",
     "src/setupTests.ts",
     "webpack.config.js",
-    "public"
+    "public",
+    "react-backend"
   ]
 }

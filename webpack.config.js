@@ -16,7 +16,13 @@ module.exports = {
 
     devServer: {
         contentBase: "./public",
-        hot: true
+        hot: true,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:3001',
+                secure: false
+            }
+        }
     },
 
     module: {
@@ -26,7 +32,7 @@ module.exports = {
 
             // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
             { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
-            { test: /\.css$/, use: [ 'style-loader', 'css-loader' ]}
+            { test: /\.css$/, use: ['style-loader', 'css-loader'] }
         ]
     },
 
@@ -35,6 +41,6 @@ module.exports = {
     // This is important because it allows us to avoid bundling all of our
     // dependencies, which allows browsers to cache those libraries between builds.
     externals: {
-       
+        serialport: 'serialport',
     },
 };

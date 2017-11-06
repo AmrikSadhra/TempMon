@@ -8,7 +8,6 @@ import ChartView from './components/ChartView';
 var FontAwesome = require('react-fontawesome');
 
 class App extends React.Component {
- 
   render() {
     return (
       <div className="App">
@@ -32,7 +31,7 @@ class App extends React.Component {
           <div className="Page-title">ArTM</div>
         </div>
         <div className="App-main">
-          <ChartView name="Banana" data={[0, 19, 3, 5, 2, 3]}/>
+          <ChartView name="Banana"/>
         </div>
       </div>
     );
