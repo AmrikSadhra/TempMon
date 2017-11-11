@@ -9,15 +9,21 @@ interface State {
   chartData: Object;
 }
 
+function epochToStr(epoch : number){
+  var date = new Date(0);
+  date.setUTCSeconds(epoch);
+  return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+}
+
 class ChartView extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
       chartData: {
-        labels: [Math.floor(new Date().getTime() / 1000)],
+        labels: [],
         datasets: [{
           label: 'Temperature (°C)',
-          data: [20],
+          data: [],
           backgroundColor: 'rgba(46, 204, 113,0.5)',
           borderWidth: 1
         }]
@@ -36,11 +42,18 @@ class ChartView extends React.Component<Props, State> {
       vars.push(py_response[key])
     }
     
+    //If Arduino is playing nicely, parse data from JSON
      if(vars[1] != null){
-      console.log("Time: " + vars[0]);
+      console.log("Time: " + parseInt(vars[0]));
       console.log("Temperature: " + parseInt(vars[1]));
-      this.state.chartData['labels'].push(parseInt(vars[0]));
+      this.state.chartData['labels'].push(epochToStr(parseInt(vars[0])));
       this.state.chartData['datasets']['0']['data'].push(parseInt(vars[1]));
+    }
+
+    //Trim the dataset if it gets too large
+    if(this.state.chartData['labels'].length > 20){
+      this.state.chartData['labels'].shift();
+      this.state.chartData['datasets']['0']['data'].shift();
     }
 
     this.setState({ chartData:  this.state.chartData})

@@ -47716,26 +47716,11 @@ var __extends = (this && this.__extends) || (function () {
 
 
 var FontAwesome = __webpack_require__(595);
-function parseObject(obj) {
-    for (var key in obj) {
-        console.log("key: " + key + ", value: " + obj[key]);
-        if (obj[key] instanceof Object) {
-            parseObject(obj[key]);
-        }
-    }
-}
 var App = /** @class */ (function (_super) {
     __extends(App, _super);
     function App() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.state = { users: [] };
-        return _this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-    App.prototype.componentDidMount = function () {
-        fetch('/users')
-            .then(function (res) { return res.json(); })
-            .then(function (users) { return parseObject({ users: users }); });
-    };
     App.prototype.render = function () {
         return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "App" },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "App-header" },
@@ -47752,7 +47737,7 @@ var App = /** @class */ (function (_super) {
                                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](FontAwesome, { name: "cog", size: "2x" }))))),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "Page-title" }, "ArTM")),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "App-main" },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__components_ChartView__["a" /* default */], { name: "Banana", data: [0, 19, 3, 5, 2, 3] }))));
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__components_ChartView__["a" /* default */], { name: "Banana" }))));
     };
     return App;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -59166,25 +59151,74 @@ var Well = function (_React$Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_chartjs_2__ = __webpack_require__(458);
-
-
-function ChartView(_a) {
-    //   throw new Error('You could be a little more enthusiastic. :D');
-    var name = _a.name, data = _a.data;
-    var chartData = {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-                label: 'Temperature (°C)',
-                data: [0, 1, 2, 2, 34, 5],
-                backgroundColor: 'rgba(46, 204, 113,0.5)',
-                borderWidth: 1
-            }]
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
-    var key = 'data';
-    chartData.datasets[key] = data;
-    return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "Chart" },
-        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1_react_chartjs_2__["a" /* Line */], { data: chartData })));
+})();
+
+
+function epochToStr(epoch) {
+    var date = new Date(0);
+    date.setUTCSeconds(epoch);
+    return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
 }
+var ChartView = /** @class */ (function (_super) {
+    __extends(ChartView, _super);
+    function ChartView(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            chartData: {
+                labels: [],
+                datasets: [{
+                        label: 'Temperature (°C)',
+                        data: [],
+                        backgroundColor: 'rgba(46, 204, 113,0.5)',
+                        borderWidth: 1
+                    }]
+            }
+        };
+        _this.getTemperatureData = _this.getTemperatureData.bind(_this);
+        var timer = setInterval(_this.getTemperatureData, 1000);
+        return _this;
+    }
+    ChartView.prototype.processPiData = function (piData) {
+        var py_response = piData['0'];
+        var vars = [];
+        for (var key in py_response) {
+            vars.push(py_response[key]);
+        }
+        //If Arduino is playing nicely, parse data from JSON
+        if (vars[1] != null) {
+            console.log("Time: " + parseInt(vars[0]));
+            console.log("Temperature: " + parseInt(vars[1]));
+            this.state.chartData['labels'].push(epochToStr(parseInt(vars[0])));
+            this.state.chartData['datasets']['0']['data'].push(parseInt(vars[1]));
+        }
+        //Trim the dataset if it gets too large
+        if (this.state.chartData['labels'].length > 20) {
+            this.state.chartData['labels'].shift();
+            this.state.chartData['datasets']['0']['data'].shift();
+        }
+        this.setState({ chartData: this.state.chartData });
+    };
+    ChartView.prototype.getTemperatureData = function () {
+        var _this = this;
+        fetch('/api/get-temperature')
+            .then(function (res) { return res.json(); })
+            .then(function (piData) { return _this.processPiData(piData); });
+    };
+    ChartView.prototype.render = function () {
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "Chart" },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1_react_chartjs_2__["a" /* Line */], { data: this.state.chartData, redraw: true })));
+    };
+    return ChartView;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
 /* harmony default export */ __webpack_exports__["a"] = (ChartView);
 
 
