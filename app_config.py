@@ -6,4 +6,3 @@ class BaseConfig(object):
                         'password': ''}
 
 
-
