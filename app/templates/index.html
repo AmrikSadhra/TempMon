@@ -1,0 +1,33 @@
+{#{% extends "layout.html" %}#}
+<!doctype html>
+<html lang="en">
+
+{% block header %}
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="theme-color" content="#000000">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="manifest" href="{{ url_for('static', filename='public/manifest.json') }}">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='public/favicon.ico') }}">
+        <title>ARTM</title>
+    </head>
+{% endblock %}
+
+{% block content %}
+    <body>
+    <noscript>
+        You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root"></div>
+    <script src="{{ url_for('static', filename='public/build/bundle.js') }}"></script>
+    </body>
+    </html>
+{% endblock %}
+
+
+
+
+

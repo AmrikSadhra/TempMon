@@ -14,17 +14,6 @@ module.exports = {
         extensions: [".ts", ".tsx", ".js", ".json"]
     },
 
-    devServer: {
-        contentBase: "./public",
-        hot: true,
-        proxy: {
-            '/api': {
-                target: 'http://localhost:3001',
-                secure: false
-            }
-        }
-    },
-
     module: {
         rules: [
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
