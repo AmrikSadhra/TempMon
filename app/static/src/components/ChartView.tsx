@@ -19,7 +19,6 @@ class ChartView extends React.Component<Props, State> {
         super(props);
         this.state = {
             chartData: {
-
                 labels: [],
                 datasets: [{
                     label: 'Temperature (°C)',
@@ -34,6 +33,10 @@ class ChartView extends React.Component<Props, State> {
         let timer = setInterval(this.getTemperatureData, 300000);
     }
 
+    componentDidMount(){
+        this.getTemperatureData();
+    }
+
     processPiData(piData: Object) {
         if (piData == null) return
 
@@ -43,7 +46,6 @@ class ChartView extends React.Component<Props, State> {
 
         //Iterate through temperatures and times, updating graph dataset
         for (var temprature_record in piData) {
-            console.log(epochToStr(piData[temprature_record]['date']['$date']))
             this.state.chartData['labels'].push(epochToStr(piData[temprature_record]['date']['$date']));
             this.state.chartData['datasets']['0']['data'].push(parseInt(piData[temprature_record]['temperature']));
         }

@@ -5,7 +5,7 @@ from flask import render_template
 from RoomData import db
 
 app = Flask(__name__)
-app.config.from_object("app_config.BaseConfig")
+app.config.from_object("app_config.Config")
 db.init_app(app)
 
 """
