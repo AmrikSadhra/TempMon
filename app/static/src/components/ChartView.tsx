@@ -9,6 +9,11 @@ interface State {
     chartData: Object;
 }
 
+function epochToStr(epoch: number): string {
+    var date = new Date(epoch);
+    return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+}
+
 class ChartView extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -26,22 +31,21 @@ class ChartView extends React.Component<Props, State> {
         };
 
         this.getTemperatureData = this.getTemperatureData.bind(this);
-        let timer = setInterval(this.getTemperatureData, 1000);
+        let timer = setInterval(this.getTemperatureData, 300000);
     }
 
     processPiData(piData: Object) {
-        if(piData == null) return
-        //If Arduino is playing nicely, parse data from JSON
-        console.log("Time: " + piData['time']);
-        console.log("Temperature: " + piData['temperature']);
-        this.state.chartData['labels'].push(piData['time']);
-        this.state.chartData['datasets']['0']['data'].push(parseInt(piData['temperature']));
+        if (piData == null) return
 
+        //Reset Chart Data
+        this.state.chartData['labels'] = []
+        this.state.chartData['datasets']['0']['data'] = []
 
-        //Trim the dataset if it gets too large
-        if (this.state.chartData['labels'].length > 20) {
-            this.state.chartData['labels'].shift();
-            this.state.chartData['datasets']['0']['data'].shift();
+        //Iterate through temperatures and times, updating graph dataset
+        for (var temprature_record in piData) {
+            console.log(epochToStr(piData[temprature_record]['date']['$date']))
+            this.state.chartData['labels'].push(epochToStr(piData[temprature_record]['date']['$date']));
+            this.state.chartData['datasets']['0']['data'].push(parseInt(piData[temprature_record]['temperature']));
         }
 
         this.setState({chartData: this.state.chartData})

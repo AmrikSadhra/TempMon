@@ -6,6 +6,10 @@
 
 # production
 /app/static/public/build
+*.pyc
+
+# pycharm
+/.idea
 
 # misc
 .DS_Store
