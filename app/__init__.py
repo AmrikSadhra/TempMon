@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from flask import Flask, jsonify
 from flask import render_template
-from RoomData import db
+from models import db
 
 app = Flask(__name__)
 app.config.from_object("app_config.Config")
@@ -15,7 +15,7 @@ Routes.
 
 @app.route('/api/get-temperature')
 def get_temperature():
-    data = RoomData.TempRecord.objects(date__gt=datetime.now() - timedelta(days=1)).only('date', 'temperature')
+    data = models.RoomData.objects(date__gt=datetime.now() - timedelta(days=1)).only('date', 'temperature')
     return jsonify(data)
 
 

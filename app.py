@@ -6,7 +6,9 @@ import schedule as schedule
 import serial
 import os
 
-from app import app, RoomData
+from app import app, models
+
+temp_calibration = -2
 
 # Attempt to reacquire serial connection
 ser = serial.Serial(
@@ -50,7 +52,7 @@ def update_temperature():
 
         # Get the last good temp reading from the database
         try:
-            last_valid_record = RoomData.TempRecord.objects(date__gt=datetime.now() - timedelta(minutes=15))[0]
+            last_valid_record = models.RoomData.objects(date__gt=datetime.now() - timedelta(minutes=15))[0]
             temp_reading = last_valid_record.temperature
             print("Falling back to temperature at time {}".format(str(last_valid_record.date)))
         except AttributeError:
@@ -58,7 +60,7 @@ def update_temperature():
             print("No valid temperatures within last 15 minutes, not logging.")
             return
 
-    temperature_record = RoomData.TempRecord(date=datetime.now(), temperature=temp_reading - 2)
+    temperature_record = models.RoomData(date=datetime.now(), temperature=temp_reading + temp_calibration)
     print("Updating Database at {} with temperature of {} C".format(temperature_record.date, temperature_record.temperature))
     temperature_record.save()
 
@@ -66,8 +68,8 @@ def update_temperature():
 if __name__ == '__main__':
     # Two threads are started in debug mode, meaning two db updates; to avoid disabling debug reloader, only do db update on main thread
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        schedule.every(5).seconds.do(update_temperature)
+        schedule.every(5).minutes.do(update_temperature)
         t = Thread(target=run_periodic)
         t.daemon = True
         t.start()
-    app.run()
+    app.run(host='0.0.0.0')

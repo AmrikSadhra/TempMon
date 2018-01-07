@@ -9,6 +9,6 @@ def __init__(host, database, user, password):
     connect(database, host=uri)
 
 
-class TempRecord(db.Document):
+class RoomData(db.Document):
     date = DateTimeField(required=True)
     temperature = FloatField(required=True)

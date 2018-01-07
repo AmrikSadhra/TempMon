@@ -17,8 +17,8 @@ void loop() { // run over and over
   // now print out the temperature
  float temperatureC = reading/9.31;
  
- Serial.println(temperatureC); 
- mySerial.println(temperatureC); 
+ Serial.print(temperatureC); Serial.println(',');
+ mySerial.print(temperatureC); mySerial.println(',');
  delay(1000);
 }
 
