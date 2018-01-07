@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from threading import Thread
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import schedule as schedule
 import serial
@@ -8,6 +8,7 @@ import os
 
 from app import app, RoomData
 
+# Attempt to reacquire serial connection
 ser = serial.Serial(
     port='/dev/ttyAMA0',
     baudrate=9600,
@@ -26,11 +27,38 @@ def run_periodic():
 
 def update_temperature():
     try:
-        temp_reading = float(ser.readline().rstrip())
+        values = []
+        serial_data = ser.readline().rstrip().split(',')
+        # Delimit the temperatures
+        for serial_read in serial_data:
+            if len(serial_read) > 0:
+                values.append(float(serial_read))
+        # If the Pi was too slow, leading to several values on one serial line, average them
+        if len(values) > 1:
+            temp_reading = sum(values) / len(values)
+        elif len(values) == 1:
+            temp_reading = values[0]
+        else:
+            raise serial.SerialException
     except serial.SerialException:
-        temp_reading = 0.0
+        # Attempt to reacquire serial
+        ser.close()
+        try:
+            ser.open()
+        except serial.SerialException:
+            print("Error reacquiring Serial port")
 
-    temperature_record = RoomData.TempRecord(date=datetime.now(), temperature=temp_reading)
+        # Get the last good temp reading from the database
+        try:
+            last_valid_record = RoomData.TempRecord.objects(date__gt=datetime.now() - timedelta(minutes=15))[0]
+            temp_reading = last_valid_record.temperature
+            print("Falling back to temperature at time {}".format(str(last_valid_record.date)))
+        except AttributeError:
+            # If we had to create the object (didn't exist in query), there is no valid older reading, skip update and log
+            print("No valid temperatures within last 15 minutes, not logging.")
+            return
+
+    temperature_record = RoomData.TempRecord(date=datetime.now(), temperature=temp_reading - 2)
     print("Updating Database at {} with temperature of {} C".format(temperature_record.date, temperature_record.temperature))
     temperature_record.save()
 
